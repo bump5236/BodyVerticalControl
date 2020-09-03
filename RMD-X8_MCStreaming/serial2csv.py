@@ -13,8 +13,11 @@ def save(file_name, head, data):
     print("--- Saved ---")
 
 
-ser =serial.Serial("COM9", 115200)
+ser =serial.Serial("COM10", 115200)
 time.sleep(2)
+
+for _ in range(20):
+    c = ser.readline()
 
 org_data = []
 save_data = []
@@ -30,7 +33,7 @@ try:
         c = c.strip().decode('utf-8')
         org_data.append(c.split(","))
 
-        if len(org_data[-1]) == 6:
+        if len(org_data[-1]) == 18:
             val = org_data[-1]
 
             arduino_time = val[0]
@@ -74,11 +77,11 @@ try:
                 pos_buf8
             ])
 
-        print(save_data[-1])
+            print(save_data[-1])
 
 except KeyboardInterrupt:
     ser.close()
-    
+
     header = [[
         "TIME",
         "ARDUINO_TIME",

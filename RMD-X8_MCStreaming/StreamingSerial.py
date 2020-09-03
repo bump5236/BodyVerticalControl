@@ -32,7 +32,7 @@ def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBo
 
 # This is a callback function that gets connected to the NatNet client. It is called once per rigid body per frame
 def receiveRigidBodyFrame( id, position, rotation ):
-    
+
     global ser, euler_x, euler_y, euler_z
 
     # print("id", id)
@@ -46,7 +46,7 @@ def receiveRigidBodyFrame( id, position, rotation ):
     if id == 1: # Rigid Body 1
         if euler_z == None:
             euler_z = euler[0]*100
-        
+
         # Serial
         body = math.floor(euler[0]*100)
         s = str(body) + '\1'
@@ -55,7 +55,7 @@ def receiveRigidBodyFrame( id, position, rotation ):
         euler_z = euler[0]*100
         euler_y = euler[1]*100
         euler_x = euler[2]*100
-    
+
         print("body", body)
 
 
@@ -78,9 +78,9 @@ commandPort = 1510
 # NatNet Data channel
 dataPort = 1511
 
-serialPort = "COM8"
+serialPort = "COM11"
 
-baudRate = 115200
+baudRate = 57600
 
 setupserial(serialPort, baudRate)
 

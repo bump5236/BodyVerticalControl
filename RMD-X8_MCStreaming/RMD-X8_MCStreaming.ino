@@ -32,7 +32,7 @@ const uint16_t MOTOR_ADDRESS = 0x141; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 10;
 
 MCP_CAN CAN(SPI_CS_PIN); //set CS PIN
-SoftwareSerial MCSerial(10, 11); // RX, TX
+SoftwareSerial MCSerial(8, 9); // RX, TX
 
 RMDx8Arduino rmd(CAN);
 
@@ -75,9 +75,9 @@ void loop()
       exit_tf = true;
     }
 
-    if (pySerial.available() > 0)
+    if (MCSerial.available() > 0)
     {
-        String str_tgt_pos = pySerial.readStringUntil('\1');
+        String str_tgt_pos = MCSerial.readStringUntil('\1');
         tgt_pos = str_tgt_pos.toInt();
     }
 
@@ -88,6 +88,39 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(tgt_pos);
     SERIAL.print(",");
+
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.print(255);
+//    SERIAL.print(",");
+//    SERIAL.println(255);
+
     SERIAL.print(rmd.reply_buf[0]);
     SERIAL.print(",");
     SERIAL.print(rmd.reply_buf[1]);
@@ -118,7 +151,7 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(rmd.pos_buf[6]);
     SERIAL.print(",");
-    SERIAL.print(rmd.pos_buf[7]);
+    SERIAL.println(rmd.pos_buf[7]);
 
     rmd.serialWriteTerminator();
     // ------------------------------------------
@@ -138,4 +171,3 @@ void loop()
     delay(100);
   }
 }
-
