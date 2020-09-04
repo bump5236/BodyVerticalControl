@@ -48,8 +48,9 @@ def receiveRigidBodyFrame( id, position, rotation ):
             euler_z = euler[0]*100
 
         # Serial
-        body = math.floor(euler[0]*100)
-        s = str(body) + '\1'
+        body = euler[0]
+        tgt = math.floor(body*600)
+        s = str(tgt) + '\1'
         ser.write(s.encode())
 
         euler_z = euler[0]*100
