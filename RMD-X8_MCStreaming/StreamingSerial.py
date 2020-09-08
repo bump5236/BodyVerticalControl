@@ -45,11 +45,11 @@ def receiveRigidBodyFrame( id, position, rotation ):
 
     if id == 1: # Rigid Body 1
         if euler_z == None:
-            euler_z = euler[0]*100
+            euler_z = math.floor(euler[0]*100)    # この方が振動しないかも
 
         # Serial
         body = euler[0]
-        tgt = math.floor(body*600)
+        tgt = body*600
         s = str(tgt) + '\1'
         ser.write(s.encode())
 
