@@ -31,7 +31,6 @@ def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBo
     pass
 
 Kp = 0.05
-VERTICAL = 0
 base_torq = 0
 
 
@@ -53,8 +52,8 @@ def receiveRigidBodyFrame( id, position, rotation ):
             euler_z = euler[0]
 
         # Serial
-        if euler[0] - VERTICAL > 0:
-            add_torq = Kp*(euler[0] - VERTICAL)
+        if euler[0] < 0:
+            add_torq = - Kp*(euler[0])
         
         # トルク
         tgt_torq = base_torq + add_torq
