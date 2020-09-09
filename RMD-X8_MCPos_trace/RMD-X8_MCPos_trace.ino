@@ -19,7 +19,7 @@
 
 unsigned long timer[3], t;
 bool exit_tf = false;
-int16_t tgt_cur = 0;
+int32_t tgt_pos = 0;
 
 const uint16_t MOTOR_ADDRESS = 0x141; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
@@ -57,32 +57,15 @@ void loop()
 
      if (MCSerial.available() > 0)
      {
-         String str_tgt_cur = MCSerial.readStringUntil('\1');
-         tgt_cur = str_tgt_cur.toInt();
+         String str_tgt_pos = MCSerial.readStringUntil('\1');
+         tgt_pos = str_tgt_pos.toInt();
      }
-
-    int16_t A = 7/3.3*2000/12.5;
-  //  tgt_cur = A * sin(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
-
-    int16_t base_cur = A * sin(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
-
-    tgt_cur = base_cur + tgt_cur;
-
-    if (tgt_cur > 400)
-    {
-        tgt_cur = 400;
-    }
-
-    else if (tgt_cur < -400)
-    {
-        tgt_cur = -400;
-    }
-    rmd.writeCurrent(MOTOR_ADDRESS, tgt_cur);
+    rmd.writePosition(MOTOR_ADDRESS, tgt_pos);
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
     SERIAL.print(",");
-    SERIAL.print(tgt_cur);
+    SERIAL.print(tgt_pos);
     SERIAL.print(",");
     SERIAL.print(rmd.reply_buf[0]);
     SERIAL.print(",");
