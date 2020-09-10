@@ -4,7 +4,6 @@
 #include <SoftwareSerial.h>
 
 
-
 /*SAMD core*/
 #ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
 #define SERIAL serialUSB
@@ -82,6 +81,7 @@ void loop()
         tgt_cur = -400;
     }
     rmd.writeCurrent(MOTOR_ADDRESS, tgt_cur);
+    rmd.readAngle(MOTOR_ADDRESS, 1);
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
