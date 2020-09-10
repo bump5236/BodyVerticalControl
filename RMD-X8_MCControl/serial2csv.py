@@ -24,7 +24,7 @@ def file_count():
             count = count +1
     return count
 
-ser =serial.Serial("COM10", 115200)
+ser =serial.Serial("/dev/ttyACM0", 115200)
 time.sleep(2)
 
 for _ in range(20):
