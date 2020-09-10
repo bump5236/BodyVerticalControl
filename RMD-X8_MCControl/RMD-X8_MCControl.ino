@@ -19,7 +19,8 @@
 
 unsigned long timer[3], t;
 bool exit_tf = false;
-int16_t tgt_cur = 0;
+int16_t tgt_cur, add_cur;
+float euler_z;
 
 const uint16_t MOTOR_ADDRESS = 0x141; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
@@ -57,8 +58,11 @@ void loop()
 
      if (MCSerial.available() > 0)
      {
-         String str_tgt_cur = MCSerial.readStringUntil('\1');
-         tgt_cur = str_tgt_cur.toInt();
+         String str_euler_z = MCSerial.readStringUntil('\1');
+         euler_z = str_euler_z.toFloat();
+
+         String str_add_cur = MCSerial.readStringUntil('\2');
+         add_cur = str_add_cur.toInt();
      }
 
     int16_t A = 7/3.3*2000/12.5;
@@ -66,7 +70,7 @@ void loop()
 
     int16_t base_cur = A * sin(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
-    tgt_cur = base_cur + tgt_cur;
+    tgt_cur = base_cur + add_cur;
 
     if (tgt_cur > 400)
     {
@@ -81,6 +85,10 @@ void loop()
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
+    SERIAL.print(",");
+    SERIAL.print(euler_z);
+    SERIAL.print(",");
+    SERIAL.print(add_cur);
     SERIAL.print(",");
     SERIAL.print(tgt_cur);
     SERIAL.print(",");

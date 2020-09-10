@@ -30,7 +30,7 @@ def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBo
     # print( "timestamp", timestamp )
     pass
 
-Kp = 0.05
+Kp = 1
 base_torq = 0
 
 
@@ -54,6 +54,8 @@ def receiveRigidBodyFrame( id, position, rotation ):
         # Serial
         if euler[0] < 0:
             add_torq = - Kp*(euler[0])
+        else :
+            add_torq = 0
         
         # トルク
         tgt_torq = base_torq + add_torq
@@ -61,7 +63,10 @@ def receiveRigidBodyFrame( id, position, rotation ):
         # 電流値指令(int16_t)
         tgt_cur = math.floor((tgt_torq)/3.3 * 2000/12.5)
 
-        s = str(tgt_cur) + '\1'
+        s = str(euler_z) + '\1'
+        ser.write(s.encode())
+
+        s = str(tgt_cur) + '\2'
         ser.write(s.encode())
 
         euler_z = euler[0]
