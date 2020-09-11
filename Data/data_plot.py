@@ -32,7 +32,7 @@ plt.rcParams["axes.linewidth"] = 1.0                 #囲みの太さ
 LINE_WIDTH = 0.5
 # -----------------------------------------------------------------------------
 
-file1 = "9.10/output1.csv"
+file1 = "9.11/output1.csv"
 
 # header = open(file,'r').readline().strip().split(',')
 data = np.loadtxt(file1, delimiter=",", skiprows=1)

@@ -51,9 +51,15 @@ def receiveRigidBodyFrame( id, position, rotation ):
         if euler_z == None:
             euler_z = euler[0]
 
+        if euler[0] == 0:
+            euler[0] = euler_z
+        elif euler[0] == None:
+            euler[0] = euler_z
+        
         # Serial
         if euler[0] < 0:
             add_torq = - Kp*(euler[0])
+        
         else :
             add_torq = 0
         
