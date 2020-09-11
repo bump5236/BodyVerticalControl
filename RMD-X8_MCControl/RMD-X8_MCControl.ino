@@ -64,7 +64,7 @@ void loop()
          add_cur = str_add_cur.toInt();
      }
 
-    int16_t A = 10/3.3*2000/12.5;
+    int16_t A = 9/3.3*2000/12.5;
   //  tgt_cur = A * sin(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
     int16_t base_cur = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);

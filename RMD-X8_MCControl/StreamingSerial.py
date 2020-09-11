@@ -30,7 +30,7 @@ def receiveNewFrame( frameNumber, markerSetCount, unlabeledMarkersCount, rigidBo
     # print( "timestamp", timestamp )
     pass
 
-Kp = 1
+Kp = 0.05
 base_torq = 0
 
 
