@@ -69,8 +69,14 @@ void loop()
 
     int16_t base_cur = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
-    // tgt_cur = base_cur + add_cur;
-    tgt_cur = base_cur;
+    if (base_cur < 0)
+    {
+      base_cur = base_cur*0.05;
+      add_cur = 0;
+    }
+
+     tgt_cur = base_cur + add_cur;
+//    tgt_cur = base_cur;
 
     if (tgt_cur > 400)
     {
