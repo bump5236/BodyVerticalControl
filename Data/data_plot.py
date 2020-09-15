@@ -32,7 +32,7 @@ plt.rcParams["axes.linewidth"] = 1.0                 #囲みの太さ
 LINE_WIDTH = 0.5
 # -----------------------------------------------------------------------------
 
-file1 = "9.11/output1.csv"
+file1 = "9.11/output3.csv"
 
 # header = open(file,'r').readline().strip().split(',')
 data = np.loadtxt(file1, delimiter=",", skiprows=1)
@@ -80,26 +80,28 @@ for l in range(len(pos)):
 LSB = 65536
 RGR = 6
 
-cur = rcur/2048*33
+torq = rcur/2000*12.5*3.3
 vel = rvel*RGR
-# pos = renc/LSB*360/RGR
+pos = renc/LSB*360/RGR
+
+tgt_torq = tgt_cur/2000*12.5*3.3
 
 plt.figure(figsize=(7,5))
-plt.plot(time, tgt_cur, label= "input", lw = LINE_WIDTH)
-plt.plot(time, cur, label= "output", lw = LINE_WIDTH)
+plt.plot(time, tgt_torq, label= "input", lw = LINE_WIDTH)
+plt.plot(time, torq, label= "output", lw = LINE_WIDTH)
 plt.plot(time, add_cur, label= "add cur", lw = LINE_WIDTH)
 plt.legend()
 
-plt.figure(figsize=(7,5))
-plt.plot(time, vel, label= "velocity", lw = LINE_WIDTH)
-plt.legend()
+# plt.figure(figsize=(7,5))
+# plt.plot(time, vel, label= "velocity", lw = LINE_WIDTH)
+# plt.legend()
 
-plt.figure(figsize=(7,5))
-plt.plot(time, pos, label= "pos", lw = LINE_WIDTH)
-plt.legend()
+# plt.figure(figsize=(7,5))
+# plt.plot(time, pos, label= "pos", lw = LINE_WIDTH)
+# plt.legend()
 
-plt.figure(figsize=(7,5))
-plt.plot(time, body_z, label= "body", lw = LINE_WIDTH)
+# plt.figure(figsize=(7,5))
+# plt.plot(time, body_z, label= "body", lw = LINE_WIDTH)
+# plt.legend()
 
-plt.legend()
 plt.show()
