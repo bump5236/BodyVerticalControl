@@ -11,8 +11,6 @@
 #define SERIAL Serial
 #endif
 
-#define StepValue 10
-
 #define BAUDRATE 115200 //シリアル通信がボトルネックにならないよう，速めに設定しておく
 #define LOOPTIME 5 //[ms] 
 
@@ -27,7 +25,7 @@ const int SPI_CS_PIN = 9;
 MCP_CAN CAN(SPI_CS_PIN); //set CS PIN
 SoftwareSerial MCSerial(8, 9); // RX, TX
 
-RMDx8Arduino rmd(CAN);
+RMDx8Arduino rmd(CAN, MOTOR_ADDRESS);
 
 void setup()
 {
@@ -39,8 +37,8 @@ void setup()
   rmd.canSetup();
   delay(1000);
 
-  rmd.clearState(MOTOR_ADDRESS);
-  rmd.writePID(MOTOR_ADDRESS, 40, 40, 50, 40, 10, 20);
+  rmd.clearState();
+  rmd.writePID(40, 40, 50, 40, 10, 20);
 
   delay(1000);
 
@@ -87,8 +85,8 @@ void loop()
     {
         tgt_cur = -400;
     }
-    rmd.writeCurrent(MOTOR_ADDRESS, tgt_cur);
-    rmd.readAngle(MOTOR_ADDRESS, 1);
+    rmd.writeCurrent(tgt_cur);
+    rmd.readAngle(1);
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
@@ -141,7 +139,7 @@ void loop()
     }
   }
 
-  rmd.clearState(MOTOR_ADDRESS);
+  rmd.clearState();
   delay(500);
   SERIAL.println("Program finish!");
   while (true)

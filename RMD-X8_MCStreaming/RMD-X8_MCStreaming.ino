@@ -44,8 +44,8 @@ void setup()
   rmd.canSetup();
   delay(1000);
 
-  rmd.clearState(MOTOR_ADDRESS);
-  rmd.writePID(MOTOR_ADDRESS, 40, 100, 50, 40, 10, 50);
+  rmd.clearState();
+  rmd.writePID(40, 100, 50, 40, 10, 50);
 
   delay(1000);
 
@@ -81,7 +81,7 @@ void loop()
         tgt_pos = str_tgt_pos.toInt();
     }
 
-    rmd.writePosition(MOTOR_ADDRESS, tgt_pos);
+    rmd.writePosition(tgt_pos);
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
@@ -163,7 +163,7 @@ void loop()
     }
   }
 
-  rmd.clearState(MOTOR_ADDRESS);
+  rmd.clearState();
   delay(500);
   SERIAL.println("Program finish!");
   while (true)
