@@ -116,10 +116,10 @@ void loop()
     }
 
     rmd1.writeCurrent(tgt_cur_1);
-    rmd1.readAngle(1);
+    rmd1.readPosition();
 
     rmd2.writeCurrent(tgt_cur_2);
-    rmd2.readAngle(1);
+    rmd2.readPosition();
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
