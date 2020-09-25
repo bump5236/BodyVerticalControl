@@ -26,24 +26,12 @@ def file_count():
 
 class motor_data:
     def __init__(self):
+        self.temperature = 0
         self.add_cur = 0
         self.tgt_cur = 0
-        self.reply_buf1 = 0
-        self.reply_buf2 = 0
-        self.reply_buf3 = 0
-        self.reply_buf4 = 0
-        self.reply_buf5 = 0
-        self.reply_buf6 = 0
-        self.reply_buf7 = 0
-        self.reply_buf8 = 0
-        self.pos_buf1 = 0
-        self.pos_buf2 = 0
-        self.pos_buf3 = 0
-        self.pos_buf4 = 0
-        self.pos_buf5 = 0
-        self.pos_buf6 = 0
-        self.pos_buf7 = 0
-        self.pos_buf8 = 0
+        self.current = 0
+        self.velocity = 0
+        self.position = 0
 
 m1 = motor_data()
 m2 = motor_data()
@@ -74,43 +62,19 @@ try:
             arduino_time = val[0]
             euler_z = val[1]
 
-            m1.add_cur = val[2]
-            m1.tgt_cur = val[3]
-            m1.reply_buf1 = val[4]
-            m1.reply_buf2 = val[5]
-            m1.reply_buf3 = val[6]
-            m1.reply_buf4 = val[7]
-            m1.reply_buf5 = val[8]
-            m1.reply_buf6 = val[9]
-            m1.reply_buf7 = val[10]
-            m1.reply_buf8 = val[11]
-            m1.pos_buf1 = val[12]
-            m1.pos_buf2 = val[13]
-            m1.pos_buf3 = val[14]
-            m1.pos_buf4 = val[15]
-            m1.pos_buf5 = val[16]
-            m1.pos_buf6 = val[17]
-            m1.pos_buf7 = val[18]
-            m1.pos_buf8 = val[19]
+            m1.temperature = val[2]
+            m1.add_cur = val[3]
+            m1.tgt_cur = val[4]
+            m1.current = val[5]
+            m1.velocity = val[6]
+            m1.position = val[7]
 
-            m2.add_cur = val[20]
-            m2.tgt_cur = val[21]
-            m2.reply_buf1 = val[22]
-            m2.reply_buf2 = val[23]
-            m2.reply_buf3 = val[24]
-            m2.reply_buf4 = val[25]
-            m2.reply_buf5 = val[26]
-            m2.reply_buf6 = val[27]
-            m2.reply_buf7 = val[28]
-            m2.reply_buf8 = val[29]
-            m2.pos_buf1 = val[30]
-            m2.pos_buf2 = val[31]
-            m2.pos_buf3 = val[32]
-            m2.pos_buf4 = val[33]
-            m2.pos_buf5 = val[34]
-            m2.pos_buf6 = val[35]
-            m2.pos_buf7 = val[36]
-            m2.pos_buf8 = val[37]
+            m2.temperature = val[8]
+            m2.add_cur = val[9]
+            m2.tgt_cur = val[10]
+            m2.current = val[11]
+            m2.velocity = val[12]
+            m2.position = val[13]
 
             m1_values = [v for v in m1.__dict__.values()]
             m2_values = [v for v in m2.__dict__.values()]
