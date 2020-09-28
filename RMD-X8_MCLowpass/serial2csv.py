@@ -56,25 +56,26 @@ try:
         c = c.strip().decode('utf-8')
         org_data.append(c.split(","))
 
-        if len(org_data[-1]) == 20:
+        if len(org_data[-1]) == 15:
             val = org_data[-1]
 
             arduino_time = val[0]
-            euler_z = val[1]
+            sync = val[1]
+            euler_z = val[2]
 
-            m1.temperature = val[2]
-            m1.add_cur = val[3]
-            m1.tgt_cur = val[4]
-            m1.current = val[5]
-            m1.velocity = val[6]
-            m1.position = val[7]
+            m1.temperature = val[3]
+            m1.add_cur = val[4]
+            m1.tgt_cur = val[5]
+            m1.current = val[6]
+            m1.velocity = val[7]
+            m1.position = val[8]
 
-            m2.temperature = val[8]
-            m2.add_cur = val[9]
-            m2.tgt_cur = val[10]
-            m2.current = val[11]
-            m2.velocity = val[12]
-            m2.position = val[13]
+            m2.temperature = val[9]
+            m2.add_cur = val[10]
+            m2.tgt_cur = val[11]
+            m2.current = val[12]
+            m2.velocity = val[13]
+            m2.position = val[14]
 
             m1_values = [v for v in m1.__dict__.values()]
             m2_values = [v for v in m2.__dict__.values()]

@@ -12,10 +12,11 @@
 #endif
 
 #define LOOPTIME 5 //[ms] 
+#define DIGITAL_INPUT_SYNC 4
 
 unsigned long timer[3], t;
 bool exit_tf = false;
-int16_t tgt_cur, add_cur;
+int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
 float euler_z;
 
 /*
@@ -27,7 +28,7 @@ const uint16_t MOTOR_ADDRESS_2 = 0x142; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
 
 MCP_CAN CAN(SPI_CS_PIN); //set CS PIN
-SoftwareSerial MCSerial(8, 9); // RX, TX
+SoftwareSerial MCSerial(12, 13); // RX, TX
 
 RMDx8Arduino rmd1(CAN, MOTOR_ADDRESS_1);
 RMDx8Arduino rmd2(CAN, MOTOR_ADDRESS_2);
@@ -39,6 +40,8 @@ void setup()
 
   MCSerial.begin(57600);
   
+  pinMode(4, INPUT);
+
   rmd1.canSetup();
   rmd2.canSetup();
   delay(1000);
@@ -60,22 +63,25 @@ void loop()
 {
   while (exit_tf==false)
   {
+//     int sync_flag = digitalRead(DIGITAL_INPUT_SYNC);
+    uint8_t sync_flag = PIND & _BV(4);
+
     timer[1] = millis();
     t = timer[1] - timer[0];
 
-     if (MCSerial.available() > 0)
-     {
-         String str_euler_z = MCSerial.readStringUntil('\1');
-         euler_z = str_euler_z.toFloat();
+    //  if (MCSerial.available() > 0)
+    //  {
+    //      String str_euler_z = MCSerial.readStringUntil('\1');
+    //      euler_z = str_euler_z.toFloat();
 
-         String str_add_cur = MCSerial.readStringUntil('\2');
-         add_cur_1 = str_add_cur.toInt();
-         add_cur_2 = str_add_cur.toInt();
-     }
+    //      String str_add_cur = MCSerial.readStringUntil('\2');
+    //      add_cur_1 = str_add_cur.toInt();
+    //      add_cur_2 = str_add_cur.toInt();
+    //  }
 
-    int16_t A = 9/3.3*2000/12.5;
+    int16_t A = 10*2000/12.5/3.3;
     int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
-    int16_t base_cur_2 = A * sin(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
+    int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
     // 振り出し
     if (base_cur_1 < 0)
@@ -90,29 +96,32 @@ void loop()
       add_cur_2 = 0;
     }
 
-    tgt_cur_1 = base_cur_1 + add_cur_1;
-    tgt_cur_2 = base_cur_2 + add_cur_2;
+    // tgt_cur_1 = base_cur_1 + add_cur_1;
+    // tgt_cur_2 = base_cur_2 + add_cur_2;
+
+    tgt_cur_1 = base_cur_1;
+    tgt_cur_2 = base_cur_2;
 
     // 制限
-    if (tgt_cur_1 > 500)
+    if (tgt_cur_1 > 600)
     {
-        tgt_cur_1 = 500;
+        tgt_cur_1 = 600;
     }
 
-    else if (tgt_cur_1 < -500)
+    else if (tgt_cur_1 < -600)
     {
-        tgt_cur_1 = -500;
+        tgt_cur_1 = -600;
     }
 
     // 制限
-    if (tgt_cur_2 > 500)
+    if (tgt_cur_2 > 600)
     {
-        tgt_cur_3 = 500;
+        tgt_cur_2 = 600;
     }
 
-    else if (tgt_cur_2 < -500)
+    else if (tgt_cur_2 < -600)
     {
-        tgt_cur_2 = -500;
+        tgt_cur_2 = -600;
     }
 
     rmd1.writeCurrent(tgt_cur_1);
@@ -123,6 +132,8 @@ void loop()
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
+    SERIAL.print(",");
+    SERIAL.print(sync_flag);
     SERIAL.print(",");
     SERIAL.print(euler_z);
     SERIAL.print(",");
@@ -150,6 +161,11 @@ void loop()
     SERIAL.print(rmd2.velocity);
     SERIAL.print(",");
     SERIAL.println(rmd2.position);
+
+//    SERIAL.print(",");
+//    SERIAL.print(tgt_cur_1);
+//    SERIAL.print(",");
+//    SERIAL.println(tgt_cur_2);
 
     rmd1.serialWriteTerminator();
     // ------------------------------------------
