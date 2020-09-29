@@ -143,11 +143,11 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(tgt_cur_1);
     SERIAL.print(",");
-    SERIAL.print(rmd1.current);
+    SERIAL.print(rmd1.present_current);
     SERIAL.print(",");
-    SERIAL.print(rmd1.velocity);
+    SERIAL.print(rmd1.present_velocity);
     SERIAL.print(",");
-    SERIAL.print(rmd1.position);
+    SERIAL.print(rmd1.present_position);
     SERIAL.print(",");
     
     SERIAL.print(rmd2.temperature);
@@ -156,11 +156,11 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(tgt_cur_2);
     SERIAL.print(",");
-    SERIAL.print(rmd2.current);
+    SERIAL.print(rmd2.present_current);
     SERIAL.print(",");
-    SERIAL.print(rmd2.velocity);
+    SERIAL.print(rmd2.present_velocity);
     SERIAL.print(",");
-    SERIAL.println(rmd2.position);
+    SERIAL.println(rmd2.present_position);
 
 //    SERIAL.print(",");
 //    SERIAL.print(tgt_cur_1);
