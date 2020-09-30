@@ -51,18 +51,9 @@ def receiveRigidBodyFrame( id, position, rotation ):
         if euler_z == None:
             euler_z = euler[0]
 
-        if euler[0] == 0:
-            euler[0] = euler_z
-        elif euler[0] == None:
-            euler[0] = euler_z
-        
-        # low pass
-        alpha = 0.8
-        body = alpha*euler_z + (1-alpha)*euler[0]
-
         # Serial
-        if body < 0:
-            add_torq = - Kp*body
+        if euler_z < 0:
+            add_torq = - Kp*euler_z
         
         else :
             add_torq = 0
@@ -73,10 +64,7 @@ def receiveRigidBodyFrame( id, position, rotation ):
         # 電流値指令(int16_t)
         tgt_cur = math.floor((tgt_torq)/3.3 * 2000/12.5)
 
-        s = str(body) + '\1'
-        ser.write(s.encode())
-
-        s = str(tgt_cur) + '\2'
+        s = str(math.floor(euler_z*100)) + '\1'
         ser.write(s.encode())
 
         euler_z = euler[0]

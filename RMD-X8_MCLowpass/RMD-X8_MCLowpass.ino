@@ -16,8 +16,10 @@
 
 unsigned long timer[3], t;
 bool exit_tf = false;
+
+float Kp = 0.03
 int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
-float euler_z;
+int16_t euler_z;
 
 /*
 1:右モータ
@@ -69,15 +71,20 @@ void loop()
     timer[1] = millis();
     t = timer[1] - timer[0];
 
-    //  if (MCSerial.available() > 0)
-    //  {
-    //      String str_euler_z = MCSerial.readStringUntil('\1');
-    //      euler_z = str_euler_z.toFloat();
+    if (MCSerial.available() > 0)
+    {
+      String str_euler_z = MCSerial.readStringUntil('\1');
+      if (str_euler_z.toFloat() != 0)
+      {
+        euler_z = str_euler_z.toInt();
+      }
+    }
 
-    //      String str_add_cur = MCSerial.readStringUntil('\2');
-    //      add_cur_1 = str_add_cur.toInt();
-    //      add_cur_2 = str_add_cur.toInt();
-    //  }
+    if (euler_z < 0)
+    {
+      add_cur_1 = -Kp * euler_z;
+      add_cur_2 = Kp * euler_z;
+    }
 
     int16_t A = 10*2000/12.5/3.3;
     int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
@@ -96,11 +103,8 @@ void loop()
       add_cur_2 = 0;
     }
 
-    // tgt_cur_1 = base_cur_1 + add_cur_1;
-    // tgt_cur_2 = base_cur_2 + add_cur_2;
-
-    tgt_cur_1 = base_cur_1;
-    tgt_cur_2 = base_cur_2;
+    tgt_cur_1 = base_cur_1 + add_cur_1;
+    tgt_cur_2 = base_cur_2 + add_cur_2;
 
     // 制限
     if (tgt_cur_1 > 600)
