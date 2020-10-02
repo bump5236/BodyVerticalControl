@@ -17,7 +17,6 @@
 unsigned long timer[3], t;
 bool exit_tf = false;
 
-float Kp = 0.03
 int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
 int16_t euler_z;
 

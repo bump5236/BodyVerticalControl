@@ -17,7 +17,7 @@
 unsigned long timer[3], t;
 bool exit_tf = false;
 
-float Kp = 0.03
+float Kp = 0.1;
 int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
 int16_t euler_z;
 
@@ -86,7 +86,7 @@ void loop()
       add_cur_2 = Kp * euler_z;
     }
 
-    int16_t A = 10*2000/12.5/3.3;
+    int16_t A = 9*2000/12.5/3.3;
     int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
     int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
@@ -103,29 +103,40 @@ void loop()
       add_cur_2 = 0;
     }
 
+    // 振り戻し
+    if (base_cur_1 > 350)
+    {
+      add_cur_1 = add_cur_1 + 100;
+    }
+    
+    if (base_cur_2 < -350)
+    {
+      add_cur_2 = add_cur_2 - 100;
+    }
+
     tgt_cur_1 = base_cur_1 + add_cur_1;
     tgt_cur_2 = base_cur_2 + add_cur_2;
 
     // 制限
-    if (tgt_cur_1 > 600)
+    if (tgt_cur_1 > 700)
     {
-        tgt_cur_1 = 600;
+        tgt_cur_1 = 700;
     }
 
-    else if (tgt_cur_1 < -600)
+    else if (tgt_cur_1 < -700)
     {
-        tgt_cur_1 = -600;
+        tgt_cur_1 = -700;
     }
 
     // 制限
-    if (tgt_cur_2 > 600)
+    if (tgt_cur_2 > 700)
     {
-        tgt_cur_2 = 600;
+        tgt_cur_2 = 700;
     }
 
-    else if (tgt_cur_2 < -600)
+    else if (tgt_cur_2 < -700)
     {
-        tgt_cur_2 = -600;
+        tgt_cur_2 = -700;
     }
 
     rmd1.writeCurrent(tgt_cur_1);
