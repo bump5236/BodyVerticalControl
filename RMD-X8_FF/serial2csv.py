@@ -80,7 +80,7 @@ try:
             m1_values = [v for v in m1.__dict__.values()]
             m2_values = [v for v in m2.__dict__.values()]
 
-            l = [timer[1]-timer[0], arduino_time, euler_z]
+            l = [timer[1]-timer[0], arduino_time, sync, euler_z]
             l.extend(m1_values)
             l.extend(m2_values)
             save_data.append(l)
@@ -93,7 +93,7 @@ except KeyboardInterrupt:
     m1_keys = ["M1_"+ k for k in m1.__dict__.keys()]
     m2_keys = ["M2_"+ k for k in m2.__dict__.keys()]
 
-    h = ["TIME", "ARDUINO_TIME", "EULER_Z"]
+    h = ["TIME", "ARDUINO_TIME", "SYNC", "EULER_Z"]
     h.extend(m1_keys)
     h.extend(m2_keys)
 

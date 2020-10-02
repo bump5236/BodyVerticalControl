@@ -30,9 +30,11 @@ plt.rcParams["ytick.minor.size"] = 5                 #y軸補助目盛り線の�
 plt.rcParams["axes.linewidth"] = 1.0                 #囲みの太さ
 
 LINE_WIDTH = 0.5
+T_MIN = 10
+T_MAX = 40
 # -----------------------------------------------------------------------------
 
-file1 = "9.28/output3.csv"
+file1 = "9.30/20200930_4.csv"
 
 # header = open(file,'r').readline().strip().split(',')
 data = np.loadtxt(file1, delimiter=",", skiprows=1)
@@ -70,20 +72,29 @@ L_pos = L_pos/600
 L_tgt_torq = L_tgt_cur/2000*12.5*3.3
 
 plt.figure(figsize=(7,5))
-plt.plot(time, R_tgt_torq, label= "input", lw = LINE_WIDTH)
-plt.plot(time, R_torq, label= "output", lw = LINE_WIDTH)
+plt.plot(time, R_tgt_torq, label= "R Target Torque", lw = LINE_WIDTH)
+plt.plot(time, R_torq, label= "R Current Torque", lw = LINE_WIDTH)
+plt.plot(time, L_tgt_torq, label= "L Target Torque", lw = LINE_WIDTH)
+plt.plot(time, L_torq, label= "L Current Torque", lw = LINE_WIDTH)
+plt.xlim(T_MIN, T_MAX)
 plt.legend()
 
 plt.figure(figsize=(7,5))
-plt.plot(time, R_vel, label= "velocity", lw = LINE_WIDTH)
+plt.plot(time, R_vel, label= "R Current Velocity", lw = LINE_WIDTH)
+plt.plot(time, L_vel, label= "L Current Velocity", lw = LINE_WIDTH)
+plt.xlim(T_MIN, T_MAX)
 plt.legend()
 
 plt.figure(figsize=(7,5))
-plt.plot(time, R_pos, label= "pos", lw = LINE_WIDTH)
+plt.plot(time, R_pos, label= "R Current Poistion", lw = LINE_WIDTH)
+plt.plot(time, L_pos, label= "L Current Poistion", lw = LINE_WIDTH)
+plt.xlim(T_MIN, T_MAX)
+plt.ylim(-100, 100)
 plt.legend()
 
-# plt.figure(figsize=(7,5))
-# plt.plot(time, body_z, label= "body", lw = LINE_WIDTH)
-# plt.legend()
+plt.figure(figsize=(7,5))
+plt.plot(time, body_z, label= "body", lw = LINE_WIDTH)
+plt.xlim(T_MIN, T_MAX)
+plt.legend()
 
 plt.show()
