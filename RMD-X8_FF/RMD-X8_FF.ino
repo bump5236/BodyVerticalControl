@@ -85,39 +85,47 @@ void loop()
     }
 
     // 振り戻し
-    if (base_cur_1 > 350)
+    if (base_cur_1 > 275)
     {
       add_cur_1 = 100;
     }
-    
-    if (base_cur_2 < -350)
+    else if (base_cur_1 > 350)
     {
-      add_cur_2 = 100;
+      add_cur_1 = 170;
+    }
+    
+    if (base_cur_2 < -275)
+    {
+      add_cur_2 = - 100;
+    }
+    else if (base_cur_2 < -350)
+    {
+      add_cur_2 = - 170;
     }
 
     tgt_cur_1 = base_cur_1 + add_cur_1;
     tgt_cur_2 = base_cur_2 + add_cur_2;
 
     // 制限
-    if (tgt_cur_1 > 600)
+    if (tgt_cur_1 > 700)
     {
-        tgt_cur_1 = 600;
+        tgt_cur_1 = 700;
     }
 
-    else if (tgt_cur_1 < -600)
+    else if (tgt_cur_1 < -700)
     {
-        tgt_cur_1 = -600;
+        tgt_cur_1 = -700;
     }
 
     // 制限
-    if (tgt_cur_2 > 600)
+    if (tgt_cur_2 > 700)
     {
-        tgt_cur_2 = 600;
+        tgt_cur_2 = 700;
     }
 
-    else if (tgt_cur_2 < -600)
+    else if (tgt_cur_2 < -700)
     {
-        tgt_cur_2 = -600;
+        tgt_cur_2 = -700;
     }
 
     rmd1.writeCurrent(tgt_cur_1);
