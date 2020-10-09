@@ -34,27 +34,28 @@ T_MIN = 10
 T_MAX = 40
 # -----------------------------------------------------------------------------
 
-file1 = "9.30/20200930_4.csv"
+file1 = "10.8/output4.csv"
 
 # header = open(file,'r').readline().strip().split(',')
 data = np.loadtxt(file1, delimiter=",", skiprows=1)
 
 time = data[:, 0]
 arduino_time = data[:, 1]
-body_z = data[:, 2]
-R_temp = data[:, 3]
-R_add_cur = data[:, 4]
-R_tgt_cur = data[:, 5]
-R_cur = data[:, 6]
-R_vel = data[:, 7]
-R_pos = data[:, 8]
+sync = data[:, 2]
+body_z = data[:, 3]
+R_temp = data[:, 4]
+R_add_cur = data[:, 5]
+R_tgt_cur = data[:, 6]
+R_cur = data[:, 7]
+R_vel = data[:, 8]
+R_pos = data[:, 9]
 
-L_temp = data[:, 9]
-L_add_cur = data[:, 10]
-L_tgt_cur = data[:, 11]
-L_cur = data[:, 12]
-L_vel = data[:, 13]
-L_pos = data[:, 14]
+L_temp = data[:, 10]
+L_add_cur = data[:, 11]
+L_tgt_cur = data[:, 12]
+L_cur = data[:, 13]
+L_vel = data[:, 14]
+L_pos = data[:, 15]
 
 
 # 16bit Encoder
