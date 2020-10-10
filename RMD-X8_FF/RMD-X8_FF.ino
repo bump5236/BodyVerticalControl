@@ -14,11 +14,19 @@
 #define LOOPTIME 5 //[ms] 
 #define DIGITAL_INPUT_SYNC 4
 
-unsigned long timer[3], t;
+unsigned long timer[3];
 bool exit_tf = false;
 
 int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
-int16_t euler_z;
+float ang_1[2], ang_2[2];
+
+int8_t mode_1 = 0; // 0:振り戻し, 1:振り出し, 2:, 3:?
+int8_t mode_2 = 0; // 0:振り戻し, 1:振り出し, 2:, 3:?
+
+int16_t max_torq = 13;
+int16_t min_torq = 1;
+int8_t max_ang = 80;
+uint8_t min_ang = -5;
 
 /*
 1:右モータ
@@ -47,14 +55,18 @@ void setup()
   rmd1.clearState();
   rmd2.clearState();
   
-  rmd1.writePID(40, 40, 50, 40, 10, 20);
-  rmd2.writePID(40, 40, 50, 40, 10, 20);
+  rmd1.writePID(40, 40, 50, 40, 20, 20);
+  rmd2.writePID(40, 40, 50, 40, 20, 20);
 
   delay(1000);
 
   rmd1.serialWriteTerminator();
   // rmd2.serialWriteTerminator();
   timer[0] = millis();
+  rmd_1.readPosition();
+  rmd_2.readPosition();
+  ang_1[0] = rmd_1.present_position / 600; // 基準の角度 [deg]
+  ang_2[0] = rmd_2.present_position / 600; // 基準の角度 [deg]
 }
 
 void loop()
@@ -67,40 +79,65 @@ void loop()
     timer[1] = millis();
     t = timer[1] - timer[0];
 
+    rmd1.readPosition();
+    rmd2.readPosition();
+    ang_1[1] = rmd_1.present_position / 600 - ang_1[0); // モータ角度 [deg]
+    ang_2[1] = rmd_2.present_position / 600 - ang_2[0]; // モータ角度 [deg]
+
     int16_t A = 9*2000/12.5/3.3;
     int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
     int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
+    // モード判定
+    if (base_cur_1 > 0)
+    {
+      mode_1 = 0
+    }
+
+    else if (base_cur_1 < 0)
+    {
+      mode_1 = 1
+    }
+
+    if (base_cur_2 < 0)
+    {
+      mode_2 = 0
+    }
+
+    else if (base_cur_2 > 0)
+    {
+      mode_2 = 1
+    }
+
+
+    // 振り戻し
+    if (mode_1 == 0)
+    {
+      if (ang_1[1] > 60)
+      {
+        add_cur_1 = 150;
+      }
+    }
     // 振り出し
-    if (base_cur_1 < 0)
+    else if (mode_1 == 1)
     {
       base_cur_1 = base_cur_1*0.05;
       add_cur_1 = 0;
     }
     
-    if (base_cur_2 > 0)
+    // 振り戻し
+    if (mode_2 == 0)
+    {
+      if (ang_2[1] < -60)
+      {
+        add_cur_2 = -150;
+      }
+    }
+    // 振り出し
+    else if (mode_2 == 1)
     {
       base_cur_2 = base_cur_2*0.05;
       add_cur_2 = 0;
-    }
-
-    // 振り戻し
-    if (base_cur_1 > 275)
-    {
-      add_cur_1 = 100;
-    }
-    else if (base_cur_1 > 350)
-    {
-      add_cur_1 = 170;
-    }
-    
-    if (base_cur_2 < -275)
-    {
-      add_cur_2 = - 100;
-    }
-    else if (base_cur_2 < -350)
-    {
-      add_cur_2 = - 170;
     }
 
     tgt_cur_1 = base_cur_1 + add_cur_1;
@@ -129,10 +166,7 @@ void loop()
     }
 
     rmd1.writeCurrent(tgt_cur_1);
-    rmd1.readPosition();
-
     rmd2.writeCurrent(tgt_cur_2);
-    rmd2.readPosition();
   
     // SerialCommunication ---------------------
     SERIAL.print(t);
@@ -151,7 +185,7 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(rmd1.present_velocity);
     SERIAL.print(",");
-    SERIAL.print(rmd1.present_position);
+    SERIAL.print(ang_1[1]);
     SERIAL.print(",");
     
     SERIAL.print(rmd2.temperature);
@@ -164,7 +198,7 @@ void loop()
     SERIAL.print(",");
     SERIAL.print(rmd2.present_velocity);
     SERIAL.print(",");
-    SERIAL.println(rmd2.present_position);
+    SERIAL.println(ang_2[1]);
 
 //    SERIAL.print(",");
 //    SERIAL.print(tgt_cur_1);

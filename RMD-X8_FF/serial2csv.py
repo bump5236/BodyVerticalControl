@@ -31,7 +31,7 @@ class motor_data:
         self.tgt_cur = 0
         self.current = 0
         self.velocity = 0
-        self.position = 0
+        self.angle = 0
 
 m1 = motor_data()
 m2 = motor_data()
@@ -68,14 +68,14 @@ try:
             m1.tgt_cur = val[5]
             m1.current = val[6]
             m1.velocity = val[7]
-            m1.position = val[8]
+            m1.angle = val[8]
 
             m2.temperature = val[9]
             m2.add_cur = val[10]
             m2.tgt_cur = val[11]
             m2.current = val[12]
             m2.velocity = val[13]
-            m2.position = val[14]
+            m2.angle = val[14]
 
             m1_values = [v for v in m1.__dict__.values()]
             m2_values = [v for v in m2.__dict__.values()]
