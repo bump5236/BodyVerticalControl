@@ -23,6 +23,7 @@ float torq_const = 3.3; // RMD X8 Pro
 
 unsigned long timer[3];
 float ang_R[2], ang_L[2];
+uint16_t cnt;
 
 bool exit_tf = false;
 int16_t tgt_cur_R, tgt_cur_L; // 目標電流 [-]
@@ -33,14 +34,14 @@ int8_t mode_L = 0; // 0:振り戻し, 1:振り出し, 2:, 3:?
 
 int16_t max_torq = 13;
 int16_t min_torq = 1;
-int8_t max_ang = 80;
+int8_t max_ang = 70;
 uint8_t min_ang = -5;
 
 // 左足
 float rangeA = 0.4; // トルク増減の定数値（振り戻し）
 float rangeB = 0.65; // トルク増減の定数値（振り出し）
 // 右足
-float rangeC = 0.4; // トルク増減の定数値（振り戻し）
+float rangeC = 0.03; // トルク増減の定数値（振り戻し）
 float rangeD = 0.65; // トルク増減の定数値（振り出し）
 
 // 新明和(左足)
@@ -52,8 +53,8 @@ float CC[10] = {2.08507152e-12, 6.21331094e-10, 7.55432406e-08, 4.78670255e-06, 
 float DD[6] = {1.82279504e-07, 3.67404520e-05, 2.83278951e-03, 1.04788154e-01, 1.85489973, 1.23883044e+01};
 
 MCP_CAN CAN(SPI_CS_PIN); // set CS PIN
-RMDx8Arduino rmd_R(CAN, MOTOR_ADDRESS); // インスタンスの作成
-RMDx8Arduino rmd_L(CAN, MOTOR_ADDRESS); // インスタンスの作成
+RMDx8Arduino rmd_R(CAN, MOTOR_ADDRESS_R); // インスタンスの作成
+RMDx8Arduino rmd_L(CAN, MOTOR_ADDRESS_L); // インスタンスの作成
 
 void setup()
 {
@@ -73,14 +74,30 @@ void setup()
   rmd_L.writePID(40, 40, 50, 40, 20, 20); // PID gainの設定
   delay(1000);
 
-  rmd_R.serialWriteTerminator();
-
   timer[0] = millis(); // t0
 
   rmd_R.readPosition();
   rmd_L.readPosition();
   ang_R[0] = rmd_R.present_position / 600; // 基準の角度 [deg]
   ang_L[0] = rmd_L.present_position / 600; // 基準の角度 [deg]
+
+  SERIAL.println("Waiting to set position ...");
+  while (ang_R[1] < 60)
+  {
+    if (cnt < 50)
+    {
+      cnt = cnt + 1;
+    }
+    rmd_R.readPosition();
+    ang_R[1] = (rmd_R.present_position / 600) + 10  - ang_R[0];
+    rmd_R.writeCurrent(10 * cnt);
+    SERIAL.print("cnt : ");
+    SERIAL.println(cnt);
+    SERIAL.print("ang : ");
+    SERIAL.println(ang_R[1]);
+    delay(50);
+  }
+  rmd_R.serialWriteTerminator();
 }
 
 void loop()
@@ -93,20 +110,20 @@ void loop()
 
     rmd_R.readPosition(); // 現在の位置(角度)を取得
     rmd_L.readPosition(); // 現在の位置(角度)を取得
-    ang_R[1] = (rmd_R.present_position / 600 - ang_R[0]); // モータ角度 [deg]
-    ang_L[1] = (rmd_L.present_position / 600 - ang_L[0]); // モータ角度 [deg]
+    ang_R[1] = (rmd_R.present_position / 600) + 10 - ang_R[0]; // モータ角度 [deg]
+    ang_L[1] = (rmd_L.present_position / 600) - ang_L[0]; // モータ角度 [deg]
     
     // 振り出し,振り戻し切り替え
     if (ang_R[1] >= 70 && mode_R == 0)
     {
       mode_R = 1;
     }
-    else if (ang_R[1] <= 5 && mode_R == 1)
+    else if (ang_R[1] <= 10 && mode_R == 1)
     {
       mode_R = 0;
     }
 
-    if (ang_L[1] <= -70 && mode_L == 0)
+    if (ang_L[1] <= -60 && mode_L == 0)
     {
       mode_L = 1;
     }
@@ -123,8 +140,9 @@ void loop()
     }
     else if (mode_R == 1) // 1:振り出し
     {
-      tgt_torq_R = DD[0] * pow(ang_R[1],5) + DD[1] * pow(ang_R[1],4) + DD[2] * pow(ang_R[1],3) + DD[3] * ang_R[1] * ang_R[1] + DD[4] * ang_R[1] + DD[5];
-      tgt_torq_R = rangeD * tgt_torq_R - 0.5;
+//      tgt_torq_R = DD[0] * pow(ang_R[1],5) + DD[1] * pow(ang_R[1],4) + DD[2] * pow(ang_R[1],3) + DD[3] * ang_R[1] * ang_R[1] + DD[4] * ang_R[1] + DD[5];
+//      tgt_torq_R = rangeD * tgt_torq_R - 0.5;
+          tgt_torq_R = - 0.005;
     }
 
     if (mode_L == 0) // 0:振り戻し
@@ -160,41 +178,53 @@ void loop()
     }
 
     // 角度制限
-    if (ang_R[1] > max_ang)
-    {
-      tgt_torq_R = 0;
-      tgt_torq_L = 0;
-      exit_tf = true;
-    }
-    
-    else if (ang_R[1] < min_ang)
-    {
-      tgt_torq_R = 0;
-      tgt_torq_L = 0;
-      exit_tf = true;
-    }
-
-    if (ang_L[1] < - max_ang)
-    {
-      tgt_torq_R = 0;
-      tgt_torq_L = 0;
-      exit_tf = true;
-    }
-    
-    else if (ang_L[1] > - min_ang)
-    {
-      tgt_torq_R = 0;
-      tgt_torq_L = 0;
-      exit_tf = true;
-    }
+//    if (ang_R[1] > max_ang)
+//    {
+//      SERIAL.println("A");
+//      tgt_torq_R = 0;
+//      tgt_torq_L = 0;
+//      exit_tf = true;
+//    }
+//    
+//    else if (ang_R[1] < min_ang)
+//    {
+//      SERIAL.println("B");
+//      tgt_torq_R = 0;
+//      tgt_torq_L = 0;
+//      exit_tf = true;
+//    }
+//
+//    if (ang_L[1] < - max_ang)
+//    {
+//      SERIAL.println("C");
+//      tgt_torq_R = 0;
+//      tgt_torq_L = 0;
+//      exit_tf = true;
+//    }
+//    
+//    else if (ang_L[1] > - min_ang)
+//    {
+//      SERIAL.println("D");
+//      tgt_torq_R = 0;
+//      tgt_torq_L = 0;
+//      exit_tf = true;
+//    }
 
     // 目標電流値（整数値） [-]
     tgt_cur_R = (2000 / 12.5 / torq_const) * tgt_torq_R;
     tgt_cur_L = (2000 / 12.5 / torq_const) * tgt_torq_L;
 
     rmd_R.writeCurrent(tgt_cur_R); // 電流値指令 & 現在の温度、電流値、速度を取得
-    rmd_L.writeCurrent(tgt_cur_L); // 電流値指令 & 現在の温度、電流値、速度を取得
+    rmd_L.writeCurrent(0); // 電流値指令 & 現在の温度、電流値、速度を取得
 
+
+//    SERIAL.print(tgt_cur_R);
+//    SERIAL.print("\t");
+//    SERIAL.print(mode_R);
+//    SERIAL.print("\t");
+//    SERIAL.print(tgt_cur_L);
+//    SERIAL.print("\t");
+//    SERIAL.println(mode_L);
 
     SERIAL.print(timer[1]);
     SERIAL.print(",");
@@ -231,6 +261,7 @@ void loop()
   rmd_R.clearState(); // 初期化
   rmd_L.clearState(); // 初期化
 
+  SERIAL.println("Finish ...");
   while (true)
   {
     delay(1000);
