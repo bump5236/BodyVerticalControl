@@ -38,10 +38,10 @@ int8_t max_ang = 70;
 uint8_t min_ang = -5;
 
 // 左足
-float rangeA = 0.4; // トルク増減の定数値（振り戻し）
+float rangeA = 0.3; // トルク増減の定数値（振り戻し）
 float rangeB = 0.65; // トルク増減の定数値（振り出し）
 // 右足
-float rangeC = 0.03; // トルク増減の定数値（振り戻し）
+float rangeC = 0.3; // トルク増減の定数値（振り戻し）
 float rangeD = 0.65; // トルク増減の定数値（振り出し）
 
 // 新明和(左足)
@@ -82,14 +82,14 @@ void setup()
   ang_L[0] = rmd_L.present_position / 600; // 基準の角度 [deg]
 
   SERIAL.println("Waiting to set position ...");
-  while (ang_R[1] < 60)
+  while (ang_R[1] > - 63)
   {
     if (cnt < 50)
     {
       cnt = cnt + 1;
     }
     rmd_R.readPosition();
-    ang_R[1] = (rmd_R.present_position / 600) + 10  - ang_R[0];
+    ang_R[1] = - ((rmd_R.present_position / 600) + 5  - ang_R[0]);
     rmd_R.writeCurrent(10 * cnt);
     SERIAL.print("cnt : ");
     SERIAL.println(cnt);
@@ -110,24 +110,24 @@ void loop()
 
     rmd_R.readPosition(); // 現在の位置(角度)を取得
     rmd_L.readPosition(); // 現在の位置(角度)を取得
-    ang_R[1] = (rmd_R.present_position / 600) + 10 - ang_R[0]; // モータ角度 [deg]
-    ang_L[1] = (rmd_L.present_position / 600) - ang_L[0]; // モータ角度 [deg]
+    ang_R[1] = - ((rmd_R.present_position / 600) + 5 - ang_R[0]); // モータ角度 [deg]
+    ang_L[1] = (rmd_L.present_position / 600) - 5 - ang_L[0]; // モータ角度 [deg]
     
     // 振り出し,振り戻し切り替え
-    if (ang_R[1] >= 70 && mode_R == 0)
+    if (ang_R[1] <= -65 && mode_R == 0)
     {
       mode_R = 1;
     }
-    else if (ang_R[1] <= 10 && mode_R == 1)
+    else if (ang_R[1] >= -5 && mode_R == 1)
     {
       mode_R = 0;
     }
 
-    if (ang_L[1] <= -60 && mode_L == 0)
+    if (ang_L[1] <= -65 && mode_L == 0)
     {
       mode_L = 1;
     }
-    else if (ang_L[1] >= -5 && mode_L == 1)
+    else if (ang_L[1] >= - 5 && mode_L == 1)
     {
       mode_L = 0;
     }
@@ -136,13 +136,15 @@ void loop()
     if (mode_R == 0) // 0:振り戻し
     {
       tgt_torq_R = CC[0] * pow(ang_R[1],9) + CC[1] * pow(ang_R[1],8) + CC[2] * pow(ang_R[1],7) + CC[3] * pow(ang_R[1],6) + CC[4] * pow(ang_R[1],5) + CC[5] * pow(ang_R[1],4) + CC[6] * pow(ang_R[1],3) + CC[7] * ang_R[1] * ang_R[1] + CC[8] * ang_R[1] + CC[9];
-      tgt_torq_R = rangeC * tgt_torq_R;
+//      tgt_torq_R = AA[0] * pow(ang_R[1],9) + AA[1] * pow(ang_R[1],8) + AA[2] * pow(ang_R[1],7) + AA[3] * pow(ang_R[1],6) + AA[4] * pow(ang_R[1],5) + AA[5] * pow(ang_R[1],4) + AA[6] * pow(ang_R[1],3) + AA[7] * ang_R[1] * ang_R[1] + AA[8] * ang_R[1] + AA[9];
+      tgt_torq_R =  rangeC * tgt_torq_R;
     }
     else if (mode_R == 1) // 1:振り出し
     {
-//      tgt_torq_R = DD[0] * pow(ang_R[1],5) + DD[1] * pow(ang_R[1],4) + DD[2] * pow(ang_R[1],3) + DD[3] * ang_R[1] * ang_R[1] + DD[4] * ang_R[1] + DD[5];
-//      tgt_torq_R = rangeD * tgt_torq_R - 0.5;
-          tgt_torq_R = - 0.005;
+      tgt_torq_R = DD[0] * pow(ang_R[1],5) + DD[1] * pow(ang_R[1],4) + DD[2] * pow(ang_R[1],3) + DD[3] * ang_R[1] * ang_R[1] + DD[4] * ang_R[1] + DD[5];
+//      tgt_torq_R = BB[0] * pow(ang_R[1],5) + BB[1] * pow(ang_R[1],4) + BB[2] * pow(ang_R[1],3) + BB[3] * ang_R[1] * ang_R[1] + BB[4] * ang_R[1] + BB[5];
+      tgt_torq_R = - rangeD * tgt_torq_R - 0.5;
+//      tgt_torq_R = - 0.05;
     }
 
     if (mode_L == 0) // 0:振り戻し
@@ -214,7 +216,7 @@ void loop()
     tgt_cur_R = (2000 / 12.5 / torq_const) * tgt_torq_R;
     tgt_cur_L = (2000 / 12.5 / torq_const) * tgt_torq_L;
 
-    rmd_R.writeCurrent(tgt_cur_R); // 電流値指令 & 現在の温度、電流値、速度を取得
+    rmd_R.writeCurrent(0); // 電流値指令 & 現在の温度、電流値、速度を取得
     rmd_L.writeCurrent(0); // 電流値指令 & 現在の温度、電流値、速度を取得
 
 
@@ -225,6 +227,8 @@ void loop()
 //    SERIAL.print(tgt_cur_L);
 //    SERIAL.print("\t");
 //    SERIAL.println(mode_L);
+
+//        SERIAL.println(ang_R[1]);
 
     SERIAL.print(timer[1]);
     SERIAL.print(",");
