@@ -81,10 +81,10 @@ void loop()
 
     rmd1.readPosition();
     rmd2.readPosition();
-    ang_1[1] = rmd_1.present_position / 600 - ang_1[0); // モータ角度 [deg]
+    ang_1[1] = rmd_1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
     ang_2[1] = rmd_2.present_position / 600 - ang_2[0]; // モータ角度 [deg]
 
-    int16_t A = 9*2000/12.5/3.3;
+    int16_t A = 8 * 2000 / 12.5 / 3.3;
     int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
     int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
 
@@ -113,30 +113,26 @@ void loop()
     // 振り戻し
     if (mode_1 == 0)
     {
-      if (ang_1[1] > 60)
-      {
-        add_cur_1 = 150;
-      }
+      // if (ang_1[1] > 60) {add_cur_1 = 150;}
+      add_cur_1 = 0.73 * ang_1[1] + 131;
     }
     // 振り出し
     else if (mode_1 == 1)
     {
-      base_cur_1 = base_cur_1*0.05;
+      base_cur_1 = base_cur_1*0.02;
       add_cur_1 = 0;
     }
     
     // 振り戻し
     if (mode_2 == 0)
     {
-      if (ang_2[1] < -60)
-      {
-        add_cur_2 = -150;
-      }
+      // if (ang_2[1] < -60) {add_cur_2 = -150;}
+      add_cur_2 = 0.73 * ang_2[1] + 131;
     }
     // 振り出し
     else if (mode_2 == 1)
     {
-      base_cur_2 = base_cur_2*0.05;
+      base_cur_2 = base_cur_2*0.02;
       add_cur_2 = 0;
     }
 

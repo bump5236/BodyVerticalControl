@@ -34,7 +34,7 @@ T_MIN = 10
 T_MAX = 40
 # -----------------------------------------------------------------------------
 
-file1 = "10.12/output1_005.csv"
+file1 = "10.13/output1.csv"
 file2 = "10.12/output2_001.csv"
 file3 = "10.12/output3_003.csv"
 file4 = "Running/2020100800002.csv"
@@ -87,16 +87,25 @@ L_vel = L_vel*RGR
 L_tgt_torq = L_tgt_cur/2000*12.5*3.3
 
 l = 1
-s = 1
-g = 800
+# s = 1
+# g = 800
 
 plt.figure(figsize=(10,8))
-plt.plot(R_ang[s:g], R_tgt_torq[s:g]/l, label= "0.05", lw = LINE_WIDTH)
+plt.plot(R_ang, R_tgt_torq, label= "R", lw = LINE_WIDTH)
+plt.plot(L_ang, L_tgt_torq, label= "L", lw = LINE_WIDTH)
 # plt.plot(R_ang[s:g], R_torq[s:g]/l, label= "R Current Torque", lw = LINE_WIDTH)
-plt.plot(data2[1:1900, 8], data2[1:1900, 5]/2000*12.5*3.3, label= "0.01", lw = LINE_WIDTH)
-plt.plot(data3[1:800, 8], data3[1:800, 5]/2000*12.5*3.3, label= "0.03", lw = LINE_WIDTH)
-plt.plot(- run_ang - 5, - run_tgt_torq/0.5*0.4/l, label= "Run Target Torque", lw = LINE_WIDTH)
+# plt.plot(data2[1:1900, 8], data2[1:1900, 5]/2000*12.5*3.3, label= "0.01", lw = LINE_WIDTH)
+# plt.plot(data3[1:800, 8], data3[1:800, 5]/2000*12.5*3.3, label= "0.03", lw = LINE_WIDTH)
+plt.plot(run_ang + 5, run_tgt_torq/0.5*0.4/l, label= "Run Target Torque", lw = LINE_WIDTH)
 # plt.xlim(T_MIN, T_MAX)
+plt.legend()
+
+plt.figure(figsize=(10,8))
+plt.plot(time, R_tgt_torq, label= "R", lw = LINE_WIDTH)
+plt.plot(time, R_mode, label= "Rmode", lw = LINE_WIDTH)
+plt.plot(time, L_tgt_torq, label= "L", lw = LINE_WIDTH)
+plt.plot(time, L_mode, label= "Lmode", lw = LINE_WIDTH)
+# plt.plot(run_ang + 5, run_tgt_torq/0.5*0.4/l, label= "Run Target Torque", lw = LINE_WIDTH)
 plt.legend()
 
 # plt.figure(figsize=(10,8))
