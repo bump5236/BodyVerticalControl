@@ -56,31 +56,30 @@ try:
         c = c.strip().decode('utf-8')
         org_data.append(c.split(","))
 
-        if len(org_data[-1]) == 15:
+        if len(org_data[-1]) == 14:
             val = org_data[-1]
 
             arduino_time = val[0]
             sync = val[1]
-            euler_z = val[2]
 
-            m1.temperature = val[3]
-            m1.add_cur = val[4]
-            m1.tgt_cur = val[5]
-            m1.current = val[6]
-            m1.velocity = val[7]
-            m1.angle = val[8]
+            m1.temperature = val[2]
+            m1.add_cur = val[3]
+            m1.tgt_cur = val[4]
+            m1.current = val[5]
+            m1.velocity = val[6]
+            m1.angle = val[7]
 
-            m2.temperature = val[9]
-            m2.add_cur = val[10]
-            m2.tgt_cur = val[11]
-            m2.current = val[12]
-            m2.velocity = val[13]
-            m2.angle = val[14]
+            m2.temperature = val[8]
+            m2.add_cur = val[9]
+            m2.tgt_cur = val[10]
+            m2.current = val[11]
+            m2.velocity = val[12]
+            m2.angle = val[13]
 
             m1_values = [v for v in m1.__dict__.values()]
             m2_values = [v for v in m2.__dict__.values()]
 
-            l = [timer[1]-timer[0], arduino_time, sync, euler_z]
+            l = [timer[1]-timer[0], arduino_time, sync]
             l.extend(m1_values)
             l.extend(m2_values)
             save_data.append(l)
@@ -93,7 +92,7 @@ except KeyboardInterrupt:
     m1_keys = ["M1_"+ k for k in m1.__dict__.keys()]
     m2_keys = ["M2_"+ k for k in m2.__dict__.keys()]
 
-    h = ["TIME", "ARDUINO_TIME", "SYNC", "EULER_Z"]
+    h = ["TIME", "ARDUINO_TIME", "SYNC"]
     h.extend(m1_keys)
     h.extend(m2_keys)
 

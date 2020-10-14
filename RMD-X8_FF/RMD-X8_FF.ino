@@ -63,10 +63,10 @@ void setup()
   rmd1.serialWriteTerminator();
   // rmd2.serialWriteTerminator();
   timer[0] = millis();
-  rmd_1.readPosition();
-  rmd_2.readPosition();
-  ang_1[0] = rmd_1.present_position / 600; // 基準の角度 [deg]
-  ang_2[0] = rmd_2.present_position / 600; // 基準の角度 [deg]
+  rmd1.readPosition();
+  rmd2.readPosition();
+  ang_1[0] = rmd1.present_position / 600; // 基準の角度 [deg]
+  ang_2[0] = rmd2.present_position / 600; // 基準の角度 [deg]
 }
 
 void loop()
@@ -76,37 +76,36 @@ void loop()
 //     int sync_flag = digitalRead(DIGITAL_INPUT_SYNC);
     uint8_t sync_flag = PIND & _BV(4);
 
-    timer[1] = millis();
-    t = timer[1] - timer[0];
+    timer[1] = millis() - timer[0];
 
     rmd1.readPosition();
     rmd2.readPosition();
-    ang_1[1] = rmd_1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
-    ang_2[1] = rmd_2.present_position / 600 - ang_2[0]; // モータ角度 [deg]
+    ang_1[1] = rmd1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
+    ang_2[1] = rmd2.present_position / 600 - ang_2[0]; // モータ角度 [deg]
 
     int16_t A = 8 * 2000 / 12.5 / 3.3;
-    int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
-    int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * (timer[1] - timer[0]) * 0.001);
+    int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * timer[1] * 0.001);
+    int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * timer[1] * 0.001);
 
     // モード判定
     if (base_cur_1 > 0)
     {
-      mode_1 = 0
+      mode_1 = 0;
     }
 
     else if (base_cur_1 < 0)
     {
-      mode_1 = 1
+      mode_1 = 1;
     }
 
     if (base_cur_2 < 0)
     {
-      mode_2 = 0
+      mode_2 = 0;
     }
 
     else if (base_cur_2 > 0)
     {
-      mode_2 = 1
+      mode_2 = 1;
     }
 
 
@@ -127,7 +126,7 @@ void loop()
     if (mode_2 == 0)
     {
       // if (ang_2[1] < -60) {add_cur_2 = -150;}
-      add_cur_2 = 0.73 * ang_2[1] + 131;
+      add_cur_2 = 0.73 * ang_2[1] - 131;
     }
     // 振り出し
     else if (mode_2 == 1)
@@ -165,11 +164,9 @@ void loop()
     rmd2.writeCurrent(tgt_cur_2);
   
     // SerialCommunication ---------------------
-    SERIAL.print(t);
+    SERIAL.print(timer[1]);
     SERIAL.print(",");
     SERIAL.print(sync_flag);
-    SERIAL.print(",");
-    SERIAL.print(euler_z);
     SERIAL.print(",");
     SERIAL.print(rmd1.temperature);
     SERIAL.print(",");
