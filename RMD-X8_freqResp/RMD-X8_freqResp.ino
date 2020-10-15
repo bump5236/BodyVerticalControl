@@ -14,10 +14,10 @@ unsigned long timer[3];
 bool exit_tf = false;
 float ang_1[2];
 int16_t tgt;
-int A = 100;
+int A = 40;
 float f = 0.1;
 
-const uint16_t MOTOR_ADDRESS_1 = 0x144; //0x140 + ID(1~32)
+const uint16_t MOTOR_ADDRESS_1 = 0x141; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
 
 MCP_CAN CAN(SPI_CS_PIN); //set CS PIN
@@ -34,7 +34,7 @@ void setup()
 
   rmd1.clearState();
   
-  rmd1.writePID(40, 40, 50, 40, 20, 20);
+  rmd1.writePID(120, 40, 50, 40, 20, 20);
   delay(1000);
 
   rmd1.serialWriteTerminator();
@@ -44,8 +44,9 @@ void setup()
 
 void loop()
 {
-  for (int i = 1; i <= 8; i++)
+  for (int i = 0; i <= 8; i++)
   {
+    delay(500);
     timer[0] = millis();
     timer[1] = 0;
     while (timer[1] < 5000)
@@ -55,9 +56,9 @@ void loop()
       rmd1.readPosition();
       ang_1[1] = rmd1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
       
-      tgt = A * sin(2 * 3.14 * f * i * timer[1] * 0.001);
+      tgt = A * 600 * sin(2 * 3.14 * f * pow(2, i) * timer[1] * 0.001);
       
-      rmd1.writeCurrent(tgt);
+      rmd1.writePosition(tgt);
     
       // SerialCommunication ---------------------
       SERIAL.print(timer[1]);

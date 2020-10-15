@@ -85,5 +85,5 @@ except KeyboardInterrupt:
     header = [h]
 
     num = file_count()
-    save("cur_kp20_ki20" + str(num) + ".csv", header, save_data)
+    save("pos_kp120_ki40_kd50_" + str(num) + ".csv", header, save_data)
     print("--- Fin ---")
