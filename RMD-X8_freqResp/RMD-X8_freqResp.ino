@@ -46,7 +46,8 @@ void loop()
 {
   for (int i = 0; i <= 8; i++)
   {
-    delay(500);
+    rmd1.writePosition(0);
+    delay(1000);
     timer[0] = millis();
     timer[1] = 0;
     while (timer[1] < 5000)
@@ -54,7 +55,7 @@ void loop()
       timer[1] = millis() - timer[0];
   
       rmd1.readPosition();
-      ang_1[1] = rmd1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
+      ang_1[1] = rmd1.present_position / 600; // モータ角度 [deg]
       
       tgt = A * 600 * sin(2 * 3.14 * f * pow(2, i) * timer[1] * 0.001);
       
