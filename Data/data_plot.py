@@ -34,7 +34,7 @@ T_MIN = 10
 T_MAX = 40
 # -----------------------------------------------------------------------------
 
-file1 = "10.8/output4.csv"
+file1 = "10.14/output2.csv"
 
 # header = open(file,'r').readline().strip().split(',')
 data = np.loadtxt(file1, delimiter=",", skiprows=1)
@@ -42,20 +42,19 @@ data = np.loadtxt(file1, delimiter=",", skiprows=1)
 time = data[:, 0]
 arduino_time = data[:, 1]
 sync = data[:, 2]
-body_z = data[:, 3]
-R_temp = data[:, 4]
-R_add_cur = data[:, 5]
-R_tgt_cur = data[:, 6]
-R_cur = data[:, 7]
-R_vel = data[:, 8]
-R_pos = data[:, 9]
+R_temp = data[:, 3]
+R_add_cur = data[:, 4]
+R_tgt_cur = data[:, 5]
+R_cur = data[:, 6]
+R_vel = data[:, 7]
+R_pos = data[:, 8]
 
-L_temp = data[:, 10]
-L_add_cur = data[:, 11]
-L_tgt_cur = data[:, 12]
-L_cur = data[:, 13]
-L_vel = data[:, 14]
-L_pos = data[:, 15]
+L_temp = data[:, 9]
+L_add_cur = data[:, 10]
+L_tgt_cur = data[:, 11]
+L_cur = data[:, 12]
+L_vel = data[:, 13]
+L_pos = data[:, 14]
 
 
 # 16bit Encoder
@@ -64,12 +63,12 @@ RGR = 6
 
 R_torq = R_cur/2000*12.5*3.3
 R_vel = R_vel*RGR
-R_pos = R_pos/600
+# R_pos = R_pos/600
 R_tgt_torq = R_tgt_cur/2000*12.5*3.3
 
 L_torq = L_cur/2000*12.5*3.3
 L_vel = L_vel*RGR
-L_pos = L_pos/600
+# L_pos = L_pos/600
 L_tgt_torq = L_tgt_cur/2000*12.5*3.3
 
 plt.figure(figsize=(7,5))
@@ -91,11 +90,6 @@ plt.plot(time, R_pos, label= "R Current Poistion", lw = LINE_WIDTH)
 plt.plot(time, L_pos, label= "L Current Poistion", lw = LINE_WIDTH)
 plt.xlim(T_MIN, T_MAX)
 plt.ylim(-100, 100)
-plt.legend()
-
-plt.figure(figsize=(7,5))
-plt.plot(time, body_z, label= "body", lw = LINE_WIDTH)
-plt.xlim(T_MIN, T_MAX)
 plt.legend()
 
 plt.show()
