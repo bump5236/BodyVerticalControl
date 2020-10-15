@@ -17,7 +17,7 @@ int16_t tgt;
 int A = 40;
 float f = 0.1;
 
-const uint16_t MOTOR_ADDRESS_1 = 0x141; //0x140 + ID(1~32)
+const uint16_t MOTOR_ADDRESS_1 = 0x144; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
 
 MCP_CAN CAN(SPI_CS_PIN); //set CS PIN
@@ -34,7 +34,7 @@ void setup()
 
   rmd1.clearState();
   
-  rmd1.writePID(120, 40, 50, 40, 20, 20);
+  rmd1.writePID(160, 40, 50, 40, 20, 20);
   delay(1000);
 
   rmd1.serialWriteTerminator();
