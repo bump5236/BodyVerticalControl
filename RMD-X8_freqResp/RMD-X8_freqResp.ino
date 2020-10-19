@@ -15,7 +15,7 @@ bool exit_tf = false;
 float ang_1[2];
 int16_t tgt;
 int A = 40;
-float f = 0.1;
+float f = 0.2;
 
 const uint16_t MOTOR_ADDRESS_1 = 0x144; //0x140 + ID(1~32)
 const int SPI_CS_PIN = 9;
@@ -44,10 +44,10 @@ void setup()
 
 void loop()
 {
-  for (int i = 0; i <= 8; i++)
+  for (int i = 0; i <= 14; i++)
   {
     rmd1.writePosition(0);
-    delay(1000);
+    delay(1500);
     timer[0] = millis();
     timer[1] = 0;
     while (timer[1] < 5000)
@@ -57,7 +57,7 @@ void loop()
       rmd1.readPosition();
       ang_1[1] = rmd1.present_position / 600; // モータ角度 [deg]
       
-      tgt = A * 600 * sin(2 * 3.14 * f * pow(2, i) * timer[1] * 0.001);
+      tgt = A * 600 * sin(2 * 3.14 * f * pow(sqrt(2), i) * timer[1] * 0.001);
       
       rmd1.writePosition(tgt);
     
