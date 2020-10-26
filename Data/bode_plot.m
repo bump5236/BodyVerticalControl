@@ -3,17 +3,22 @@
 clear
 close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set(0, 'defaultAxesFontSize', 16);
+set(0, 'defaultAxesFontSize', 18);
 set(0, 'defaultAxesFontName', 'times');
-set(0, 'defaultTextFontSize', 16);
+set(0, 'defaultTextFontSize', 20);
 set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath(pwd, 'FrequencyResponse\10.15.2');
-file_list = ["pos_kp20_ki40_kd50_4.csv", "pos_kp40_ki40_kd50_3.csv", "pos_kp80_ki40_kd50_2.csv", "pos_kp120_ki40_kd50_1.csv", "pos_kp160_ki40_kd50_5.csv"];
+addpath(pwd, 'FrequencyResponse\10.19');
+% file_list = ["pos_kp20_ki40_kd50_4.csv", "pos_kp40_ki40_kd50_3.csv", "pos_kp80_ki40_kd50_2.csv", "pos_kp120_ki40_kd50_1.csv", "pos_kp160_ki40_kd50_5.csv"];
 % file_list = ["pos_kp20_ki40_kd50_PRO6.csv", "pos_kp40_ki40_kd50_PRO7.csv", "pos_kp80_ki40_kd50_PRO8.csv", "pos_kp120_ki40_kd50_PRO9.csv", "pos_kp160_ki40_kd50_PRO10.csv"];
-freqset = [0.1 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6];
-c_set = ['b', 'g', 'r', 'c', 'k'];
+% file_list = ["pos_kp20_ki40_kd50_PRO1.csv", "pos_kp40_ki40_kd50_PRO2.csv", "pos_kp60_ki40_kd50_PRO3.csv", "pos_kp80_ki40_kd50_PRO4.csv", "pos_kp100_ki40_kd50_PRO5.csv"...
+%                 "pos_kp120_ki40_kd50_PRO6.csv", "pos_kp140_ki40_kd50_PRO7.csv", "pos_kp160_ki40_kd50_PRO8.csv"];
+file_list = ["pos_kp20_ki40_kd50_PRO1.csv", "pos_kp60_ki40_kd50_PRO3.csv", "pos_kp100_ki40_kd50_PRO5.csv"...
+                "pos_kp140_ki40_kd50_PRO7.csv"];
+freqset = [0.2,  0.2*sqrt(2), 0.4, 0.4*sqrt(2), 0.8, 0.8*sqrt(2), 1.6, 1.6*sqrt(2), 3.2, 3.2*sqrt(2), 6.4, 6.4*sqrt(2), 12.8, 12.8*sqrt(2)];
+c_set = ['b', 'g', 'r', 'm'];
+kp_list = ["Kp=20", "Kp=60", "Kp=100", "Kp=140"];
 
 
 for i_n = 1:length(file_list)
@@ -28,13 +33,13 @@ for i_n = 1:length(file_list)
 %     figure
     
     
-    for i = 1:9
+    for i = 1:14
         X0 = find(num == i - 1, 1);
         X = find(num == i, 1);
         bode_data(i).inputAmp = max(input(X0+10 : X - 1));
         bode_data(i).outputAmp = max(output(X0+10 : X - 1));
         
-        if i == 9
+        if i == 15
             bode_data(i).inputAmp = max(input(X0+10 : end));
             bode_data(i).outputAmp = max(output(X0+10 : end));
         end
@@ -45,17 +50,14 @@ for i_n = 1:length(file_list)
         hold on
     end
     
-%     plot(freqset, list, c_set(i_n))
-    p = polyfit(freqset, list, 2);
-    x = linspace(0,30);
-    y = polyval(p, x);
-    plot(x, y)
-    xlabel("frequency [Hz]")
-    ylabel("magnitude [dB]")
+    plt(i_n) = plot(freqset, list, c_set(i_n), 'DisplayName', kp_list(i_n));
+    grid on
+    xlim([0.5 18])
+    xlabel("Frequency [Hz]")
+    ylabel("Magnitude [dB]")
 
 end
 
-
-% title(["RMD-X8 PRO"; "A=17.5, kp=100, ki=100, kd=50"])
+legend([plt(1), plt(2), plt(3), plt(4)])
 
 

@@ -10,68 +10,50 @@ set(0,'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% csv読み込み
-file = importdata('output.csv', ',', 1);
+file = importdata('10.14\output2.csv', ',', 1);
 
 time = file.data(:, 1);
 arduino_time = file.data(:, 2);
-tgt_pos = file.data(:, 3);
-cmd_byte = file.data(:, 4);
-temperature = file.data(:, 5);
-cur_L = file.data(:, 6);
-cur_H = file.data(:, 7);
-vel_L = file.data(:, 8);
-vel_H = file.data(:, 9);
-enc_L = file.data(:, 10);
-enc_H = file.data(:, 11);
-pos_cmd = file.data(:, 12);
-pos_low_1 = file.data(:, 13);
-pos_2 = file.data(:, 14);
-pos_3 = file.data(:, 15);
-pos_4 = file.data(:, 16);
-pos_5 = file.data(:, 17);
-pos_6 = file.data(:, 18);
-pos_7 = file.data(:, 19);
+sync = file.data(:, 3);
+R_temp = file.data(:, 4);
+R_add_cur = file.data(:, 5);
+R_tgt_cur = file.data(:, 6);
+R_cur = file.data(:, 7);
+R_vel = file.data(:, 8);
+R_pos = file.data(:, 9);
 
-cur = bitshift(cur_H, 8, 'int16') + cur_L;
-vel = bitshift(vel_H, 8, 'int16') + vel_L;
-enc_pos = bitshift(enc_H, 8, 'int16') + enc_L;
+L_temp = file.data(:, 10);
+L_add_cur = file.data(:, 11);
+L_tgt_cur = file.data(:, 12);
+L_cur = file.data(:, 13);
+L_vel = file.data(:, 14);
+L_pos = file.data(:, 15);
 
-pos = bitshift(pos_7, 48, 'int64') + bitshift(pos_6, 40, 'int64') + bitshift(pos_5, 32, 'int64') + bitshift(pos_4, 24, 'int64') + bitshift(pos_3, 16, 'int64') + bitshift(pos_2, 8, 'int64') + pos_low_1;
+% 16bit Encoder
+LSB = 65536;
+RGR = 6;
 
-% Arduino -> Matlabのmulti angleの変換はこれを用いる
-for l = 1:length(pos)
-    if pos(l)  > 36028797018963967
-        pos(l) = pos(l) - 72057594037927935;
-    end
-end
+R_torq = R_cur/2000*12.5*3.3;
+R_vel = R_vel*RGR;
+R_tgt_torq = R_tgt_cur/2000*12.5*3.3;
 
-tgt_pos = tgt_pos/100/6;
-pos = enc_pos/65536*360/6;
-vel = vel/6;
-
-for i = 1:length(pos)
-    if i == 1
-        cvel(i) = 0;
-    else 
-        cvel(i) = (pos(i) - pos(i-1))/(time(i)-time(i-1));
-    end
-end
+L_torq = L_cur/2000*12.5*3.3;
+L_vel = L_vel*RGR;
+L_tgt_torq = L_tgt_cur/2000*12.5*3.3;
 
 figure
-plot(time, cur)
-
-figure
-plot(time, vel)
+plot(time, R_tgt_torq, 'DisplayName', "R_tgt_torq")
 hold on
-plot(time, cvel)
+plot(time, R_torq, 'DisplayName', "R_torq")
+plot(time, R_pos, 'DisplayName', "R_pos")
+legend
 
 figure
-plot(time, tgt_pos)
+plot(time, L_tgt_torq, 'DisplayName', "L_tgt_torq")
 hold on
-plot(time, pos)
-xlabel("time [ms]")
-ylabel("input/output [deg]")
-legend({'input', 'output'})
+plot(time, L_torq, 'DisplayName', "L_torq")
+plot(time, L_pos, 'DisplayName', "L_pos")
+legend
 
-filename = ['outputFig'];        
-saveas(gcf, filename, 'png')
+% filename = ['outputFig'];        
+% saveas(gcf, filename, 'png')
