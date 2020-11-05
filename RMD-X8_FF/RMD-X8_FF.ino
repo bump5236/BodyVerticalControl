@@ -12,9 +12,9 @@
 #endif
 
 #define LOOPTIME 5 //[ms] 
-#define DIGITAL_INPUT_SYNC 4
 
 unsigned long timer[3];
+unsigned long cnt = 1;
 bool exit_tf = false;
 
 int16_t tgt_cur_1, tgt_cur_2, add_cur_1, add_cur_2;
@@ -27,6 +27,7 @@ int16_t max_torq = 13;
 int16_t min_torq = 1;
 int8_t max_ang = 80;
 uint8_t min_ang = -5;
+float f = 0.77;
 
 /*
 1:右モータ
@@ -55,8 +56,8 @@ void setup()
   rmd1.clearState();
   rmd2.clearState();
   
-  rmd1.writePID(40, 40, 50, 40, 20, 20);
-  rmd2.writePID(40, 40, 50, 40, 20, 20);
+  rmd1.writePID(40, 40, 50, 40, 20, 250);
+  rmd2.writePID(40, 40, 50, 40, 20, 250);
 
   delay(1000);
 
@@ -73,19 +74,22 @@ void loop()
 {
   while (exit_tf==false)
   {
-//     int sync_flag = digitalRead(DIGITAL_INPUT_SYNC);
-    uint8_t sync_flag = PIND & _BV(4);
+    uint8_t sync_flag = PIND & _BV(2);
 
     timer[1] = millis() - timer[0];
+    if ((timer[1]*0.001) > (1/f * cnt))
+    {
+      cnt = cnt + 1;
+    }
 
     rmd1.readPosition();
     rmd2.readPosition();
     ang_1[1] = rmd1.present_position / 600 - ang_1[0]; // モータ角度 [deg]
     ang_2[1] = rmd2.present_position / 600 - ang_2[0]; // モータ角度 [deg]
 
-    int16_t A = 8 * 2000 / 12.5 / 3.3;
-    int16_t base_cur_1 = A * cos(2 * 3.14 * 0.7 * timer[1] * 0.001);
-    int16_t base_cur_2 = A * cos(2 * 3.14 * 0.7 * timer[1] * 0.001);
+    int16_t A = 4 * 2000 / 12.5 / 3.3;
+    int16_t base_cur_1 = A * cos(2 * 3.14 * f * timer[1] * 0.001);
+    int16_t base_cur_2 = A * cos(2 * 3.14 * f * timer[1] * 0.001);
 
     // モード判定
     if (base_cur_1 > 0)
@@ -112,7 +116,6 @@ void loop()
     // 振り戻し
     if (mode_1 == 0)
     {
-      // if (ang_1[1] > 60) {add_cur_1 = 150;}
       add_cur_1 = 0.73 * ang_1[1] + 131;
     }
     // 振り出し
@@ -193,10 +196,10 @@ void loop()
     SERIAL.print(",");
     SERIAL.println(ang_2[1]);
 
-//    SERIAL.print(",");
-//    SERIAL.print(tgt_cur_1);
-//    SERIAL.print(",");
-//    SERIAL.println(tgt_cur_2);
+    // SERIAL.print(",");
+    // SERIAL.print(cnt*100);
+    // SERIAL.print(",");
+    // SERIAL.println(base_cur_1);
 
     rmd1.serialWriteTerminator();
     // ------------------------------------------
